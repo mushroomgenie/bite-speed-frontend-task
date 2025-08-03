@@ -10,8 +10,8 @@ type SideBarProps = {
 }
 const Sidebar = (props: SideBarProps) => {
     const {nodeLabel,setNodeLabel,sideBarType,setSideBarType} = props;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, setType] = useDnD();
+
+    const {setType} = useDnD();
 
     const onDragStart = (event:React.DragEvent<HTMLDivElement>, nodeType:string) => {
         setType(nodeType);

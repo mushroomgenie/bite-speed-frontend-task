@@ -1,12 +1,16 @@
 "use client"
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, SetStateAction,Dispatch } from 'react';
 
-const DnDContext = createContext([null, (_: any) => { }]);
+type DnDContextType = {
+    type: string,
+    setType: Dispatch<SetStateAction<string>>
+}
+const DnDContext = createContext<DnDContextType>({} as DnDContextType);
 
 export const DnDProvider = ({ children }: { children: ReactNode }) => {
-    const [type, setType] = useState(null);
+    const [type, setType] = useState<string>("");
     return (
-        <DnDContext.Provider value={[type, setType]}>
+        <DnDContext.Provider value={{type,setType}}>
             {children}
         </DnDContext.Provider>
     );
@@ -15,5 +19,8 @@ export const DnDProvider = ({ children }: { children: ReactNode }) => {
 export default DnDContext;
 
 export const useDnD = () => {
+    if(!useContext(DnDContext)){
+        throw Error("DndContext can only be used inside ReactFlowContext")
+    }
     return useContext(DnDContext);
 }

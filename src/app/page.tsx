@@ -1,6 +1,6 @@
 "use client"
 import { useCallback, useRef, useEffect, useState } from "react";
-import { ReactFlow, addEdge, Connection, Background, useReactFlow, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
+import { ReactFlow, addEdge, Connection, Background, useReactFlow, applyNodeChanges, applyEdgeChanges, NodeMouseHandler,Node,OnNodesChange, OnEdgesChange, Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import Sidebar from "./components/sideBar";
 import MessageNode from "./components/messageNode";
@@ -12,8 +12,6 @@ const nodeTypes = {
 let id = 3;
 const getId = () => `n${id++}`;
 
-
-
 export default function Home() {
   const reactFlowWrapper = useRef(null);
 
@@ -23,23 +21,23 @@ export default function Home() {
     { id: 'n2', position: { x: 0, y: 100 }, type: "messageNode", data: { label: 'Node 2' } }
   ];
 
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState([]);
-  const [currentNodeId, setCurrentNodeId] = useState(null);
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [currentNodeId, setCurrentNodeId] = useState("");
   const [nodeLabel, setNodeLabel] = useState('');
   const [sideBarType, setSideBarType] = useState("nodes")
   const [save, setSave] = useState(true)
 
   const { screenToFlowPosition } = useReactFlow();
-  const [type, setType] = useDnD();
+  const {type, setType} = useDnD();
 
-  const handleNodeClick = (event, node) => {
-    setNodeLabel(node.data.label)
+  const handleNodeClick:NodeMouseHandler<Node> = useCallback((event,node) => {
+    setNodeLabel(node.data.label as string)
     setCurrentNodeId(node.id)
     setSideBarType("nodeMessage")
-  }
+  },[]) 
 
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback((event:React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
@@ -64,7 +62,7 @@ export default function Home() {
   }, [setNodes, currentNodeId, nodeLabel])
 
   const onDrop = useCallback(
-    (event) => {
+    (event:React.DragEvent) => {
       event.preventDefault();
       // check if the dropped element is valid
       if (!type) {
@@ -87,7 +85,7 @@ export default function Home() {
     [screenToFlowPosition, setNodes, type],
   );
 
-  const onDragStart = (event, nodeType: string) => {
+  const onDragStart = (event:React.DragEvent<HTMLDivElement>, nodeType: string) => {
     setType(nodeType);
     event.dataTransfer.setData('text/plain', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -97,14 +95,14 @@ export default function Home() {
     (params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
     [setEdges],
   );
-  const onNodesChange = useCallback(
+  const onNodesChange:OnNodesChange = useCallback(
     (changes) => {
       setSave(true)
       setNodes((nds) => applyNodeChanges(changes, nds))
     },
     [setNodes],
   );
-  const onEdgesChange = useCallback(
+  const onEdgesChange: OnEdgesChange = useCallback(
     (changes) => {
       setSave(true)
       setEdges((eds) => applyEdgeChanges(changes, eds))
@@ -139,7 +137,7 @@ export default function Home() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onDrop={onDrop}
-            onDragStart={onDragStart}
+            onDragStart={(event) => onDragStart(event,"messageNode")}
             onDragOver={onDragOver}
             onNodeClick={handleNodeClick}
             fitView
