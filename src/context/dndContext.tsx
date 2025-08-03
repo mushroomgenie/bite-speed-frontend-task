@@ -1,7 +1,7 @@
 "use client"
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-const DnDContext = createContext([null, (_) => { }]);
+const DnDContext = createContext([null, (_: any) => { }]);
 
 export const DnDProvider = ({ children }: { children: ReactNode }) => {
     const [type, setType] = useState(null);

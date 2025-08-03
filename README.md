@@ -3,7 +3,8 @@ This is a Frontend Hiring Task for Bitespeed.
 - The tech stack here is NextJs and an external library called [reactflow](https://www.reactflow.dev).
 - The flow has message nodes that can be dropped in from a side bar.
 - Upon clicking a node, the side bar view changes to a text area where the label of the node can be edited.
-- The flow cannot be saved with more than one nodes have empty target handles.
+- The flow cannot be saved with more than one nodes having empty target handles.
+- The task is deployed [here]().
 
 ## Installation Guide
 
